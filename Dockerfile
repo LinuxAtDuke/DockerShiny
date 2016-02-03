@@ -27,4 +27,6 @@ RUN echo $RSTUDIO_REPOSITORY > /etc/apt/sources.list.d/rstudio.list && \
 
 RUN R -e "install.packages(c(${R_PACKAGES}),repos=${R_REPOS})"
 
-
+EXPOSE 3838
+ENTRYPOINT ['R']
+CMD ['--help']
