@@ -8,10 +8,12 @@ ENV TERM 'xterm'
 ENV DEBIAN_FRONTEND 'noninteractive'
 
 ENV RSTUDIO_REPOSITORY 'deb http://cran.rstudio.com/bin/linux/ubuntu wily/'
-ENV PACKAGES 'r-base'
-ENV R_PACKAGES "'lubridate','ggplot2','shiny','rgdal','sp','raster','rasterVis','reshape2','shape','maptools','fields','magicaxis','leaflet'"
 ENV R_REPOS "'http://cran.rstudio.com/'"
 
+ENV PACKAGES 'r-base'
+
+# Edit R packages to suit your needs
+ENV R_PACKAGES "'lubridate','ggplot2','shiny','rgdal','sp','raster','rasterVis','reshape2','shape','maptools','fields','magicaxis','leaflet'"
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -23,7 +25,6 @@ RUN echo $RSTUDIO_REPOSITORY > /etc/apt/sources.list.d/rstudio.list && \
     apt-get update && \
     apt-get install -y $PACKAGES && \
     rm -rf /var/lib/apt/lists/*
-
 
 RUN R -e "install.packages(c(${R_PACKAGES}),repos=${R_REPOS})"
 
