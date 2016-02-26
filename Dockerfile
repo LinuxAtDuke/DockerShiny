@@ -66,3 +66,6 @@ EXPOSE 3838
 USER shiny
 ENTRYPOINT [ '/etc/service/shiny/run' ]
 
+##### UNCOMMENT HERE TO ADD YOUR SHINY APP #####
+#ADD your_shiny_app_dir /srv/shiny-server/your_shiny_app_dir
+
