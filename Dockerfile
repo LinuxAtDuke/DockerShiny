@@ -1,51 +1,68 @@
 # Docker-Shiny
-FROM ubuntu:vivid
+FROM ubuntu:15.10
 MAINTAINER Chris Collins <christopher.collins@duke.edu> & Matthew Ross <matthewross07@gmail.com>
 
 ENV CONTAINER 'docker'
 ENV TERM 'xterm'
 ENV DEBIAN_FRONTEND 'noninteractive'
 
-ENV UBUNTU_VERSION 'vivid'
+ENV UBUNTU_VERSION 'wily'
 
 ENV UBUNTU_UNIVERSE_REPO "deb http://archive.ubuntu.com/ubuntu ${UBUNTU_VERSION} universe"
+ENV UBUNTU_BACKPORTS_REPO "deb http://archive.ubuntu.com/ubuntu ${UBUNTU_VERSION}-backports main restricted universe"
 ENV RSTUDIO_REPO "deb http://cran.rstudio.com/bin/linux/ubuntu ${UBUNTU_VERSION}/"
-ENV UBUNTUGIS_REPO 'ppa:ubuntugis/ubuntugis-unstable'
-ENV R_REPOS "'http://cran.rstudio.com/'"
-ENV SHINY_SERVER "https://download3.rstudio.org/ubuntu-12.04/x86_64/shiny-server-1.4.1.759-amd64.deb"
 
-# Need these for apt-add-repository command
+# Need APT_PACKAGES for apt-add-repository command
 ENV APT_PACKAGES 'software-properties-common python-software-properties'
+ENV R_BASE_PACKAGES 'r-base r-base-dev'
 
-ENV PACKAGES 'r-base gdal-bin libgdal1-dev libproj-dev gdebi-core'
-
-# Edit R packages to suit your needs
+# R Internal repos/packages
+ENV R_REPOS "'http://cran.rstudio.com/'"
 ENV R_PACKAGES "'lubridate','ggplot2','shiny','rgdal','sp','raster','rasterVis','reshape2','shape','maptools','fields','magicaxis','leaflet','rgdal','sp','raster'"
+ENV GDEBI_PACKAGES 'gdebi-core'
+
+ENV SHINY_SERVER "https://download3.rstudio.org/ubuntu-12.04/x86_64/shiny-server-1.4.1.759-amd64.deb"
 
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y $APT_PACKAGES && \
     rm -rf /var/lib/apt/lists/*
 
+# THIS MAY NOT BE NEEDED
+# RUN add-apt-repository -y "${UBUNTU_UNIVERSE_REPO}"
+# END THIS MAY NOT BE NEEDED 
+RUN add-apt-repository -y "${UBUNTU_BACKPORTS_REPO}"
+
 # Something breaks with the key using add-apt-repository
 # Need to investigate why
 RUN echo "${RSTUDIO_REPO}" > /etc/apt/sources.list.d/rstudio.list
-RUN gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9 && \
-    gpg -a --export E084DAB9 | apt-key add - 
-
-RUN add-apt-repository -y "${UBUNTU_UNIVERSE_REPO}"
-RUN add-apt-repository -y "${UBUNTUGIS_REPO}"
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+# BELOW NOT NEEDED IF ABOVE WORKS
+#RUN gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9 && \
+#    gpg -a --export E084DAB9 | apt-key add - 
+# END _________
 
 RUN apt-get update && \
-    apt-get install -y $PACKAGES && \
+    apt-get install -y $R_BASE_PACKAGES $GDEBI_PACKAGES && \
     rm -rf /var/lib/apt/lists/*
 
+# Install the extra R packages, and shiny
 RUN R -e "install.packages(c(${R_PACKAGES}),repos=${R_REPOS})"
 
-RUN curl $SHINY_SERVER -o /tmp/shiny-server.deb && \
-    gdebi /tmp/shiny-server.deb && \
+
+# Install shiby-server
+RUN curl $SHINY_SERVER -o /tmp/shiny-server.deb 
+
+# Following fixes a bug with the libssl version in the shiny server package on later ubuntu versions
+RUN mkdir -p /tmp/repackage && \
+    dpkg-deb -R /tmp/shiny-server.deb /tmp/repackage && \
+    sed -i 's/libssl0.9.8/libssl1.0.0/' /tmp/repackage/DEBIAN/control && \
+    dpkg-deb -b /tmp/repackage /tmp/shiny-server.deb
+
+RUN gdebi -n /tmp/shiny-server.deb && \
     rm /tmp/shiny-server.deb
 
 EXPOSE 3838
 ENTRYPOINT [ 'R' ]
 CMD [ '--help' ]
+
