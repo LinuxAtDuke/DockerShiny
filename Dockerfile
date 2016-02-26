@@ -20,6 +20,7 @@ ENV R_BASE_PACKAGES 'r-base r-base-dev'
 ENV R_REPOS "'http://cran.rstudio.com/'"
 ENV R_PACKAGES "'lubridate','ggplot2','shiny','rgdal','sp','raster','rasterVis','reshape2','shape','maptools','fields','magicaxis','leaflet','rgdal','sp','raster'"
 ENV GDEBI_PACKAGES 'gdebi-core'
+ENV GDAL_PACKAGES 'gdal-bin libgdal1-dev libproj-dev'
 
 ENV SHINY_SERVER "https://download3.rstudio.org/ubuntu-12.04/x86_64/shiny-server-1.4.1.759-amd64.deb"
 
@@ -36,7 +37,7 @@ RUN echo "${RSTUDIO_REPO}" > /etc/apt/sources.list.d/rstudio.list
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
 
 RUN apt-get update && \
-    apt-get install -y $R_BASE_PACKAGES $GDEBI_PACKAGES && \
+    apt-get install -y $R_BASE_PACKAGES $GDAL_PACKAGES $GDEBI_PACKAGES && \
     rm -rf /var/lib/apt/lists/*
 
 # Install the extra R packages, and shiny
