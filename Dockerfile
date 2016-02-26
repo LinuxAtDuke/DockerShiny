@@ -18,7 +18,7 @@ ENV R_BASE_PACKAGES 'r-base r-base-dev'
 
 # R Internal repos/packages
 ENV R_REPOS "'http://cran.rstudio.com/'"
-ENV R_PACKAGES "'lubridate','ggplot2','shiny','rgdal','sp','raster','rasterVis','reshape2','shape','maptools','fields','magicaxis','leaflet','rgdal','sp','raster'"
+ENV R_PACKAGES "'rmarkdown', 'lubridate','ggplot2','shiny','rgdal','sp','raster','rasterVis','reshape2','shape','maptools','fields','magicaxis','leaflet','rgdal','sp','raster'"
 ENV GDEBI_PACKAGES 'gdebi-core'
 ENV GDAL_PACKAGES 'gdal-bin libgdal1-dev libproj-dev'
 
@@ -56,7 +56,13 @@ RUN mkdir -p /tmp/repackage && \
 RUN gdebi -n /tmp/shiny-server.deb && \
     rm /tmp/shiny-server.deb
 
+RUN mkdir -p /etc/service/shiny
+ADD shiny-server.run /etc/service/shiny/run
+RUN chmod -R a+x /etc/service/
+
 EXPOSE 3838
-ENTRYPOINT [ 'R' ]
-CMD [ '--help' ]
+
+# Run as Shiny
+USER shiny
+ENTRYPOINT [ '/etc/service/shiny/run' ]
 
