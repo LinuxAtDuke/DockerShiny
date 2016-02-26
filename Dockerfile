@@ -28,19 +28,12 @@ RUN apt-get update && \
     apt-get install -y $APT_PACKAGES && \
     rm -rf /var/lib/apt/lists/*
 
-# THIS MAY NOT BE NEEDED
-# RUN add-apt-repository -y "${UBUNTU_UNIVERSE_REPO}"
-# END THIS MAY NOT BE NEEDED 
 RUN add-apt-repository -y "${UBUNTU_BACKPORTS_REPO}"
 
 # Something breaks with the key using add-apt-repository
 # Need to investigate why
 RUN echo "${RSTUDIO_REPO}" > /etc/apt/sources.list.d/rstudio.list
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
-# BELOW NOT NEEDED IF ABOVE WORKS
-#RUN gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9 && \
-#    gpg -a --export E084DAB9 | apt-key add - 
-# END _________
 
 RUN apt-get update && \
     apt-get install -y $R_BASE_PACKAGES $GDEBI_PACKAGES && \
@@ -49,11 +42,11 @@ RUN apt-get update && \
 # Install the extra R packages, and shiny
 RUN R -e "install.packages(c(${R_PACKAGES}),repos=${R_REPOS})"
 
-
-# Install shiby-server
+# Install shiny-server
 RUN curl $SHINY_SERVER -o /tmp/shiny-server.deb 
 
 # Following fixes a bug with the libssl version in the shiny server package on later ubuntu versions
+# 0.9.8 not available, and insecure, but it can use 1.0.0 instead
 RUN mkdir -p /tmp/repackage && \
     dpkg-deb -R /tmp/shiny-server.deb /tmp/repackage && \
     sed -i 's/libssl0.9.8/libssl1.0.0/' /tmp/repackage/DEBIAN/control && \
