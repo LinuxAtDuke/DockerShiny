@@ -1,15 +1,7 @@
 # Docker-Shiny
-FROM ubuntu:15.10
+FROM stevedore-repo.oit.duke.edu/deb-base-15.10
 MAINTAINER Chris Collins <christopher.collins@duke.edu> & Matthew Ross <matthewross07@gmail.com>
 
-ENV CONTAINER 'docker'
-ENV TERM 'xterm'
-ENV DEBIAN_FRONTEND 'noninteractive'
-
-ENV UBUNTU_VERSION 'wily'
-
-ENV UBUNTU_UNIVERSE_REPO "deb http://archive.ubuntu.com/ubuntu ${UBUNTU_VERSION} universe"
-ENV UBUNTU_BACKPORTS_REPO "deb http://archive.ubuntu.com/ubuntu ${UBUNTU_VERSION}-backports main restricted universe"
 ENV RSTUDIO_REPO "deb http://cran.rstudio.com/bin/linux/ubuntu ${UBUNTU_VERSION}/"
 
 # Need APT_PACKAGES for apt-add-repository command
@@ -25,7 +17,6 @@ ENV GDAL_PACKAGES 'gdal-bin libgdal1-dev libproj-dev'
 ENV SHINY_SERVER "https://download3.rstudio.org/ubuntu-12.04/x86_64/shiny-server-1.4.1.759-amd64.deb"
 
 RUN apt-get update && \
-    apt-get upgrade -y && \
     apt-get install -y $APT_PACKAGES && \
     rm -rf /var/lib/apt/lists/*
 
@@ -65,5 +56,5 @@ EXPOSE 3838
 ENTRYPOINT '/etc/service/shiny/run'
 
 ##### UNCOMMENT HERE TO ADD YOUR SHINY APP #####
-#ADD your_shiny_app_dir /srv/shiny-server/your_shiny_app_dir
+ADD ZoomDEM /srv/shiny-server/ZoomDEM
 
