@@ -1,5 +1,5 @@
 # Docker-Shiny
-FROM stevedore-repo.oit.duke.edu/deb-base-15.10
+FROM stevedore-repo.oit.duke.edu/deb-base-16.04
 MAINTAINER Chris Collins <christopher.collins@duke.edu> & Matthew Ross <matthewross07@gmail.com>
 
 ENV RSTUDIO_REPO "deb http://cran.rstudio.com/bin/linux/ubuntu ${UBUNTU_VERSION}/"
