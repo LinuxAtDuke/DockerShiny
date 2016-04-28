@@ -1,5 +1,5 @@
 # Docker-Shiny
-FROM ubuntu:16.04
+FROM ubuntu:15.10
 MAINTAINER Chris Collins <christopher.collins@duke.edu> & Matthew Ross <matthewross07@gmail.com>
 
 ENV RSTUDIO_REPO "deb http://cran.rstudio.com/bin/linux/ubuntu ${UBUNTU_VERSION}/"
