@@ -5,7 +5,7 @@ MAINTAINER Chris Collins <christopher.collins@duke.edu> & Matthew Ross <matthewr
 ENV RSTUDIO_REPO "deb http://cran.rstudio.com/bin/linux/ubuntu ${UBUNTU_VERSION}/"
 
 # Need APT_PACKAGES for apt-add-repository command
-ENV APT_PACKAGES 'software-properties-common python-software-properties'
+ENV APT_PACKAGES 'git software-properties-common python-software-properties'
 ENV R_BASE_PACKAGES 'r-base r-base-dev'
 
 # R Internal repos/packages
@@ -46,6 +46,9 @@ RUN mkdir -p /tmp/repackage && \
 
 RUN gdebi -n /tmp/shiny-server.deb && \
     rm /tmp/shiny-server.deb
+
+ADD install-packages.sh /install-packages.sh
+RUN chmod a+x /install-packages.sh
 
 RUN mkdir -p /etc/service/shiny
 ADD shiny-server.run /etc/service/shiny/run
