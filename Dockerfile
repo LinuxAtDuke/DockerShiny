@@ -25,6 +25,7 @@ ENV GDAL_PACKAGES 'gdal-bin libgdal1-dev libproj-dev'
 ENV SHINY_SERVER "https://download3.rstudio.org/ubuntu-12.04/x86_64/shiny-server-1.4.1.759-amd64.deb"
 
 RUN apt-get update && \
+    apt-get upgrade -y && \
     apt-get install -y $APT_PACKAGES && \
     rm -rf /var/lib/apt/lists/*
 
