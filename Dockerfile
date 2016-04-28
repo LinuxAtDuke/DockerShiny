@@ -1,12 +1,12 @@
 # Docker-Shiny
-FROM ubuntu:16.04
+FROM ubuntu:15.10
 MAINTAINER Chris Collins <christopher.collins@duke.edu> & Matthew Ross <matthewross07@gmail.com>
 
 ENV CONTAINER 'docker'
 ENV TERM 'xterm'
 ENV DEBIAN_FRONTEND 'noninteractive'
 
-ENV UBUNTU_VERSION 'xenial'
+ENV UBUNTU_VERSION 'wily'
 ENV UBUNTU_UNIVERSE_REPO "deb http://archive.ubuntu.com/ubuntu ${UBUNTU_VERSION} universe"
 ENV UBUNTU_BACKPORTS_REPO "deb http://archive.ubuntu.com/ubuntu ${UBUNTU_VERSION}-backports main restricted universe"
 
