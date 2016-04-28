@@ -2,7 +2,14 @@
 FROM ubuntu:15.10
 MAINTAINER Chris Collins <christopher.collins@duke.edu> & Matthew Ross <matthewross07@gmail.com>
 
-ENV UBUNTU_VERSION "wily"
+ENV CONTAINER 'docker'
+ENV TERM 'xterm'
+ENV DEBIAN_FRONTEND 'noninteractive'
+
+ENV UBUNTU_VERSION 'wily'
+ENV UBUNTU_UNIVERSE_REPO "deb http://archive.ubuntu.com/ubuntu ${UBUNTU_VERSION} universe"
+ENV UBUNTU_BACKPORTS_REPO "deb http://archive.ubuntu.com/ubuntu ${UBUNTU_VERSION}-backports main restricted universe"
+
 ENV RSTUDIO_REPO "deb http://cran.rstudio.com/bin/linux/ubuntu ${UBUNTU_VERSION}/"
 
 # Need APT_PACKAGES for apt-add-repository command
@@ -21,7 +28,7 @@ RUN apt-get update && \
     apt-get install -y $APT_PACKAGES && \
     rm -rf /var/lib/apt/lists/*
 
-#RUN add-apt-repository -y "${UBUNTU_BACKPORTS_REPO}"
+RUN add-apt-repository -y "${UBUNTU_BACKPORTS_REPO}"
 
 # Something breaks with the key using add-apt-repository
 # Need to investigate why
