@@ -37,7 +37,7 @@ This option will allow you to specify a GIT repo from which your Shiny app can b
 
 Build the image as in the base example (`docker build --pull -t shiny-server .`), then run it with:
 
-    docker run -p -p 3838:3838 -e USER_REPO="your_git_url" -d shiny-server
+    docker run -p 3838:3838 -e USER_REPO="your_git_url" -d shiny-server
  
 Making sure to replace "your_git_url" with the HTTPS checkout URL of your Git repo \(ie. it starts with "https://" and not "git://"\).
 

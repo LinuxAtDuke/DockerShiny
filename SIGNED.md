@@ -3,9 +3,9 @@
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iEYEABECAAYFAlciIY0ACgkQte6EFif3vzebNQCfZYucfUHHqxEcmFbjy0BTkasg
-n4cAoMJS3LL+OHo0nwt3sscI0DgyWalG
-=LHb/
+iEYEABECAAYFAlcss+cACgkQte6EFif3vzc1zwCgoAS2UqFkFZXWNRKpqhjvoJwZ
+wIUAnAoHA5lfa7PLZbUARK8W5ELpsaxX
+=62SH
 -----END PGP SIGNATURE-----
 
 ```
@@ -24,8 +24,8 @@ size  exec  file                   contents
 2632          Dockerfile           2e5b916a6961530af3329a6faa661eb04afcb7e5b7f62570deffc0c63a62cad2
               docs/                                                                                
 1473          install-packages.sh  5b7ac6829572fde17bba28f082aef740c494613baa99aa6bf0d54f2c6d7708d3
-1791          README.md            39fa64e71e607aa5395f52286bff60598a43321a4cc8eaf02068f3c503f37113
-983   x       shiny-server.run     b395b0feb914387a5e7bff4a496c18915464bbf40c39f8de715aafc3e632e68f
+1788          README.md            3fa479d4455ec0f1ab53b39049b2b61f66e90acf2c29af3e93a24b3ccaaaad1f
+976   x       shiny-server.run     bbd3c44fd915cf3c62d680aa13bbc898508024af0c1db990d9e3b10bb191f404
 ```
 
 #### Ignore

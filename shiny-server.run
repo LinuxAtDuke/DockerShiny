@@ -14,7 +14,7 @@ err_out () {
 if [[ ! -z $USER_REPO ]]
     then DIR="/srv/shiny-server/$(echo ${USER_REPO} | awk -F/ '{print $NF}' | sed 's/.git$//')"
 
-    git clone ${USER_REPO} ${DIR} \   
+    git clone ${USER_REPO} ${DIR} \
     || err_out "Unable to clone repo: ${USER_REPO}"
 
     bash -x /install-packages.sh ${DIR} \
@@ -22,7 +22,7 @@ if [[ ! -z $USER_REPO ]]
 else
     echo "No USER_REPO variable specified. Assuming a mounted or built-in shiny server"
     DIRS=$(ls /srv/shiny-server)
-    
+
     for DIR in $DIRS
     do echo "Found ${dir}...looking for package files"
        bash -x /install-packages.sh ${DIR} \
