@@ -11,20 +11,32 @@ err_out () {
     exit 1
 }
 
+warn () {
+    local message="$1"
+
+    echo "[WARN]: ${message}"
+    return 0
+}
+
 if [[ ! -z $USER_REPO ]]
     then DIR="/srv/shiny-server/$(echo ${USER_REPO} | awk -F/ '{print $NF}' | sed 's/.git$//')"
 
-    git clone ${USER_REPO} ${DIR} \
-    || err_out "Unable to clone repo: ${USER_REPO}"
+    if [[ ! -d ${DIR} ]]
+    	then warn "No shiny app found; cloning from ${USER_REPO}"
 
-    bash -x /install-packages.sh ${DIR} \
-    || err_out "Failed to install post-run packages"
+        git clone ${USER_REPO} ${DIR} \
+	|| err_out "Unable to clone repo: ${USER_REPO}"
+
+        warn "Checking for extra packages"
+        bash -x /install-packages.sh ${DIR} \
+        || err_out "Failed to install post-run packages"
+    fi
 else
     echo "No USER_REPO variable specified. Assuming a mounted or built-in shiny server"
     DIRS=$(ls /srv/shiny-server)
 
     for DIR in $DIRS
-    do echo "Found ${dir}...looking for package files"
+    do echo "Found ${DIR}...looking for package files"
        bash -x /install-packages.sh ${DIR} \
        || err_out "Failed to install post-run packages"
     done
