@@ -3,9 +3,9 @@
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iEYEABECAAYFAlcsvTQACgkQte6EFif3vzefgQCg7yxWoYNNwKgwTPpdyvHygZ3B
-FEIAoN1RvF7dbsqx72yOWu42AEeio3mF
-=Ouw3
+iEYEABECAAYFAlcsw/8ACgkQte6EFif3vzdKJwCeJ77zjxtvw5K8bkUrW6fVlyE9
+gfcAnRQ80XfRMdrunV9BnMJmh+1BljA9
+=aTjX
 -----END PGP SIGNATURE-----
 
 ```
@@ -25,7 +25,7 @@ size  exec  file                   contents
               docs/                                                                                
 1473          install-packages.sh  5b7ac6829572fde17bba28f082aef740c494613baa99aa6bf0d54f2c6d7708d3
 1788          README.md            3fa479d4455ec0f1ab53b39049b2b61f66e90acf2c29af3e93a24b3ccaaaad1f
-1204  x       shiny-server.run     0e08d1774e08d675ea2953b6cd8cb65ac73c06446dbc562b48f21f035c322a42
+1622  x       shiny-server.run     12148cd5464a482fe61362a0657ee19b1dc30a2434c321f67fe926e4240d825e
 ```
 
 #### Ignore
