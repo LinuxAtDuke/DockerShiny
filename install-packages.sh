@@ -45,7 +45,7 @@ main () {
         done
         # TODO: Should we somehow take extra R repositories?  Below is just CRAN set from Dockerfile
         if  [[ ${#packages[@]} != 0 ]]
-            then R -e "install.packages(c(${r_packages}),repos=${R_REPOS})" \
+            then R -e "install.packages(c('${r_packages}'),repos=${R_REPOS})" \
             || exit 1
         fi
     fi
