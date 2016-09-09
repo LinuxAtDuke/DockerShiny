@@ -68,5 +68,5 @@ EXPOSE 3838
 ENTRYPOINT '/etc/service/shiny/run'
 
 ##### UNCOMMENT HERE TO ADD YOUR SHINY APP #####
-#ADD ZoomDEM /srv/shiny-server/ZoomDEM
+# ADD your_shiny_app_dir /srv/shiny-server/your_shiny_app_dir
 
