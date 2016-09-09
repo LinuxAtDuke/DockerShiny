@@ -1,38 +1,70 @@
 #!/bin/bash
 
-set -x
+#set -x
 
-touch /var/log/shiny-server.log
+LOGDIR="/var/log/shiny-server"
+LOGFILE="${LOGDIR}/shiny-server.log"
 
 err_out () {
     local message="$1"
 
-    echo "[ERROR]: ${message}"
+    echo "[ERROR]: ${message}" | tee $LOGFILE
     exit 1
 }
 
+warn () {
+    local message="$1"
+
+    echo "[WARN]: ${message}" | tee $LOGFILE
+    return 0
+}
+
+info () {
+    local message="$1"
+
+    echo "[INFO]: ${message}" | tee $LOGFILE
+    return 0
+}
+
+info "Starting up..."
+
+# Make sure the directory for individual app logs exists
+mkdir -p $LOGDIR
+touch $LOGFILE
+
+chown shiny.shiny $LOGDIR $LOGFILE
+
+
 if [[ ! -z $USER_REPO ]]
-    then DIR="/srv/shiny-server/$(echo ${USER_REPO} | awk -F/ '{print $NF}' | sed 's/.git$//')"
+    then DIR="/srv/$(echo ${USER_REPO} | awk -F/ '{print $NF}' | sed 's/.git$//')"
 
-    git clone ${USER_REPO} ${DIR} \
-    || err_out "Unable to clone repo: ${USER_REPO}"
+    if [[ ! -d ${DIR} ]]
+    	then warn "No shiny app found; cloning from ${USER_REPO}"
 
-    bash -x /install-packages.sh ${DIR} \
-    || err_out "Failed to install post-run packages"
+        git clone ${USER_REPO} ${DIR} \
+	|| err_out "Unable to clone repo: ${USER_REPO}"
+
+        info "Checking for extra packages"
+        bash -x /install-packages.sh ${DIR} \
+        || err_out "Failed to install post-run packages"
+
+        if [[ -d /srv/shiny-server ]]
+	    then info "Removing default shiny-server apps; linking cloned app"
+            mv /srv/shiny-server /srv/shiny-server.bak
+            ln -s ${DIR} /srv/shiny-server
+        fi
+    fi
 else
-    echo "No USER_REPO variable specified. Assuming a mounted or built-in shiny server"
+    warn "No USER_REPO variable specified. Assuming a mounted or built-in shiny server"
     DIRS=$(ls /srv/shiny-server)
 
     for DIR in $DIRS
-    do echo "Found ${dir}...looking for package files"
+    do info "Found ${DIR}...looking for package files"
        bash -x /install-packages.sh ${DIR} \
        || err_out "Failed to install post-run packages"
     done
 fi
 
-# Make sure the directory for individual app logs exists
-mkdir -p /var/log/shiny-server
-
-chown shiny.shiny /var/log/shiny-server /var/log/shiny-server.log
+info "Pre-config complete.  Starting Shiny Server..."
 
 exec /usr/bin/shiny-server >> /var/log/shiny-server.log 2>&1
