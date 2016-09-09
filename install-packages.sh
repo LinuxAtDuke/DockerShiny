@@ -37,17 +37,13 @@ main () {
     unset packages
 
     if [[ -f ${r_packages} ]]
-        then declare -a packages
-        log "Found ${r_packates}"
+        then 
+        log "Found ${r_packages}"
         for package in $(cat ${r_packages})
-            do log "Adding ${package} to install job"
-            packages+=(${package})
+        do 
+            log "Installing ${package} "
+            R -e "install.packages(c('${package}'),repos=${R_REPOS})" 
         done
-        # TODO: Should we somehow take extra R repositories?  Below is just CRAN set from Dockerfile
-        if  [[ ${#packages[@]} != 0 ]]
-            then R -e "install.packages(c(${r_packages}),repos=${R_REPOS})" \
-            || exit 1
-        fi
     fi
 }
 
