@@ -18,7 +18,7 @@ ENV R_BASE_PACKAGES 'r-base r-base-dev'
 
 # R Internal repos/packages
 ENV R_REPOS "'http://cran.rstudio.com/'"
-ENV R_PACKAGES "'rmarkdown','devtools','dygraphs','tidyr','dplyr','lubridate','ggplot2','shiny','rgdal','sp','raster','rasterVis','reshape2','shape','maptools','fields','magicaxis','leaflet','rgdal','sp','raster'"
+ENV R_Packages "'rmarkdown','devtools','xts','ggvis','dygraphs','tidyr','dplyr','lubridate','ggplot2','shiny','rgdal','sp','raster','rasterVis','reshape2','shape','maptools','fields','magicaxis','leaflet'"
 ENV GDEBI_PACKAGES 'gdebi-core'
 ENV GDAL_PACKAGES 'gdal-bin libgdal1-dev libproj-dev'
 
