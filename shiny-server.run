@@ -26,13 +26,14 @@ info () {
     return 0
 }
 
-info "Starting up..."
 
-# Make sure the directory for individual app logs exists
-mkdir -p $LOGDIR
-touch $LOGFILE
+mk_logs () {
+    # Make sure the directory for individual app logs exists
+    mkdir -p $LOGDIR
+    touch $LOGFILE
 
-chown shiny.shiny $LOGDIR $LOGFILE
+    chown shiny.shiny $LOGDIR $LOGFILE
+}
 
 
 if [[ ! -z $USER_REPO ]]
@@ -68,3 +69,15 @@ fi
 info "Pre-config complete.  Starting Shiny Server..."
 
 exec /usr/bin/shiny-server >> /var/log/shiny-server.log 2>&1
+
+
+main () {
+
+  mk_logs
+
+  info "Starting up..."
+
+}
+
+
+main
