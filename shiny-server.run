@@ -1,83 +1,105 @@
 #!/bin/bash
 
-#set -x
+create_logfile () {
+  local logdir="/var/log/shiny-server"
+  local logfile="${logdir}/shiny-server.log"
 
-LOGDIR="/var/log/shiny-server"
-LOGFILE="${LOGDIR}/shiny-server.log"
+  if [[ ! -d $logdir ]]
+  then
+    mkdir $logdir
+  fi
 
-err_out () {
-    local message="$1"
+  if [[ ! -f $logfile ]]
+  then
+    touch $logfile
+    chown shiny.shiny $logdir $logfile
+  fi
 
-    echo "[ERROR]: ${message}" | tee $LOGFILE
-    exit 1
+  return 0
 }
 
-warn () {
-    local message="$1"
+log () {
+  local message="${1}"
+  local logdir="/var/log/shiny-server"
+  local logfile="${logdir}/shiny-server.log"
 
-    echo "[WARN]: ${message}" | tee $LOGFILE
-    return 0
-}
-
-info () {
-    local message="$1"
-
-    echo "[INFO]: ${message}" | tee $LOGFILE
-    return 0
-}
-
-
-mk_logs () {
-    # Make sure the directory for individual app logs exists
-    mkdir -p $LOGDIR
-    touch $LOGFILE
-
-    chown shiny.shiny $LOGDIR $LOGFILE
+  echo "[INFO]: ${message}" | tee $logfile
+  return 0
 }
 
 
-if [[ ! -z $USER_REPO ]]
-    then DIR="/srv/$(echo ${USER_REPO} | awk -F/ '{print $NF}' | sed 's/.git$//')"
+clone_user_repo () {
+  
+  # If the USER_REPO var is not zero length, then try to clone it
+  if [[ ! -z $USER_REPO ]]
+  then
+    local repo="${USER_REPO}"
+    local dir="/srv/$(echo ${repo} | awk -F/ '{print $NF}' | sed 's/.git$//')"
+    
+    # Check to make sure nothing is there first
+    if [[ ! -d ${dir} ]]
+    then
 
-    if [[ ! -d ${DIR} ]]
-    	then warn "No shiny app found; cloning from ${USER_REPO}"
+      log "[WARN] No shiny app found; cloning from ${repo}"
+      if ! git clone ${repo} ${dir}
+      then
+        # We should not continue if we can't clone the repo
+        log "[CRIT] Unable to clone repo: ${repo}"
+        return 1
+      fi
 
-        git clone ${USER_REPO} ${DIR} \
-	|| err_out "Unable to clone repo: ${USER_REPO}"
-
-        info "Checking for extra packages"
-        bash -x /install-packages.sh ${DIR} \
-        || err_out "Failed to install post-run packages"
-
-        if [[ -d /srv/shiny-server ]]
-	    then info "Removing default shiny-server apps; linking cloned app"
-            mv /srv/shiny-server /srv/shiny-server.bak
-            ln -s ${DIR} /srv/shiny-server
-        fi
     fi
-else
-    warn "No USER_REPO variable specified. Assuming a mounted or built-in shiny server"
-    DIRS=$(ls /srv/shiny-server)
 
+  else
+    log "[INFO] No USER_REPO variable specified. Assuming a mounted or built-in shiny app"
+  fi
+
+  return 0
+}
+  
+
+
+
+
+TODO:
+
+  1. Check for extra packages, a la Drupal
+  2. Check Symlink /srv/shiny-server
+  3. How do deal with many apps in one?
+
+
+      info "Checking for extra packages"
+      bash -x /install-packages.sh ${DIR} \
+      || err_out "Failed to install post-run packages"
+  
+      if [[ -d /srv/shiny-server ]]
+      then info "Removing default shiny-server apps; linking cloned app"
+        mv /srv/shiny-server /srv/shiny-server.bak
+        ln -s ${DIR} /srv/shiny-server
+      fi
+    fi
+    DIRS=$(ls /srv/shiny-server)
+  
     for DIR in $DIRS
     do info "Found ${DIR}...looking for package files"
-       bash -x /install-packages.sh ${DIR} \
-       || err_out "Failed to install post-run packages"
+     bash -x /install-packages.sh ${DIR} \
+     || err_out "Failed to install post-run packages"
     done
-fi
+  fi
+  
+}
 
-info "Pre-config complete.  Starting Shiny Server..."
-
-exec /usr/bin/shiny-server >> /var/log/shiny-server.log 2>&1
 
 
 main () {
 
-  mk_logs
+  create_logfile
 
-  info "Starting up..."
+  if ! clone_user_repo
+  then
+    exit 1
+  fi
 
+  log "[INFO] Pre-config complete.  Starting Shiny Server..."
+  exec /usr/bin/shiny-server >> /var/log/shiny-server.log 2>&1
 }
-
-
-main
