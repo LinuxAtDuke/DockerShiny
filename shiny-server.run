@@ -23,7 +23,7 @@ log () {
   local logdir="/var/log/shiny-server"
   local logfile="${logdir}/shiny-server.log"
 
-  echo "[INFO]: ${message}" | tee $logfile
+  echo "$(date '+%Y-%m-%dT%H:%M') - ${message}" | tee $logfile
   return 0
 }
 
@@ -41,13 +41,18 @@ clone_user_repo () {
     then
 
       log "[WARN] No shiny app found; cloning from ${repo}"
-      if ! git clone ${repo} ${dir}
+      if ! git clone ${repo} ${dir} >> /dev/null
       then
         # We should not continue if we can't clone the repo
         log "[CRIT] Unable to clone repo: ${repo}"
         return 1
+      else
+        log "[INFO] Linking ${dir} as /srv/shiny-server"
+        shiny_link ${dir} \
+        || return $?
+        install_packages ${dir} \
+        || return $?
       fi
-
     fi
 
   else
@@ -56,41 +61,39 @@ clone_user_repo () {
 
   return 0
 }
-  
 
+shiny_link () {
+  local dir="${1}"
 
-
-
-TODO:
-
-  1. Check for extra packages, a la Drupal
-  2. Check Symlink /srv/shiny-server
-  3. How do deal with many apps in one?
-
-
-      info "Checking for extra packages"
-      bash -x /install-packages.sh ${DIR} \
-      || err_out "Failed to install post-run packages"
-  
-      if [[ -d /srv/shiny-server ]]
-      then info "Removing default shiny-server apps; linking cloned app"
-        mv /srv/shiny-server /srv/shiny-server.bak
-        ln -s ${DIR} /srv/shiny-server
-      fi
-    fi
-    DIRS=$(ls /srv/shiny-server)
-  
-    for DIR in $DIRS
-    do info "Found ${DIR}...looking for package files"
-     bash -x /install-packages.sh ${DIR} \
-     || err_out "Failed to install post-run packages"
-    done
+  if [[ -d /srv/shiny-server ]]
+  then
+    log "[INFO] Removing default shiny-server apps; linking app in ${dir}"
+    rm -rf /srv/shiny-server \
+    || return $?
+    ln -s ${dir} /srv/shiny-server \
+    || return $?
   fi
-  
+
+  return $?
 }
+  
+install_packages () {
+  local app_dir="${1}"
+  # Empty quotes below search /
+  local search_dirs=("" "/conf" "${app_dir}/.stevedore")
 
-
-
+  for dir in ${search_dirs[@]}
+  do
+    if ! bash /install-packages.sh ${dir}
+    then
+      log "[ERROR] Running ${script} failed"
+      return 1
+    fi
+  done
+  
+  return 0      
+}
+      
 main () {
 
   create_logfile
@@ -103,3 +106,5 @@ main () {
   log "[INFO] Pre-config complete.  Starting Shiny Server..."
   exec /usr/bin/shiny-server >> /var/log/shiny-server.log 2>&1
 }
+
+main
