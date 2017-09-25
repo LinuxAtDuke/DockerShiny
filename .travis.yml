@@ -1,0 +1,16 @@
+language: generic
+
+sudo: required
+
+services:
+  - docker
+
+script:
+  - "docker-compose build shiny:1610"
+  - "docker-compose build shiny:1710"
+  # Add tests here
+  #- "docker-compose up" 
+
+notifications:
+  email:
+    - christopher.collins@duke.edu
