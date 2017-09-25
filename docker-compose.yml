@@ -1,0 +1,9 @@
+version: '2'
+services:
+  shiny1610:
+    build:
+      dockerfile: ./Dockerfile
+      context: .
+    image: shiny:1610
+    ports:
+      - "3838"
