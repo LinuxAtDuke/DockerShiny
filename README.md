@@ -47,10 +47,3 @@ Making sure to replace "your_git_url" with the HTTPS checkout URL of your Git re
 Finally:
 
 When your shiny server container is running, you can navigate to http://your_hostname:3838 to view your shiny apps.
-
-
-Issues
-------
-
-Tracked Here: https://gitlab.oit.duke.edu/clc0317/docker-shiny/issues
-
