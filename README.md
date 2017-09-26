@@ -1,6 +1,8 @@
 docker-shiny
 ============
 
+[![Master Build Status](https://travis-ci.org/LinuxAtDuke/DockerShiby.svg?branch=master)](https://travis-ci.org/LinuxAtDuke/DockerShiny.git)
+
 R, Shiny and Shiny-Server in a Docker container.
 
 Usage
